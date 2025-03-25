@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1 Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Smooch+Sans:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        body,
+        button {
+            font-family: "Smooch Sans";
+            font-size: 14pt;
+        }
+
+        #say_hi_button {
+            width: 150px;
+            height: 50px;
+            font-size: 14pt;
+        }
+
+        @media screen and (min-width:1024px) {
+            body {
+                background-color: red;
+                padding: 100px;
+            }
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            //setting variables
+            const helloButton = document.querySelector('#btn-hello');
+            const goodbyeButton = document.querySelector('#btn-goodbye');
+            const outputPTag = document.querySelector('#output');
+            const firstnameInput = document.querySelector('#first-name-input');
+            const lastnameInput = document.querySelector('#last-name-input');
+            const shoutifyCheckbox = document.querySelector('#shoutify');
+
+            outputPTag.style.backgroundColor = "yellow";
+            outputPTag.style.color = "red";
+
+            helloButton.addEventListener('click', () => greet("Hello"));
+            goodbyeButton.addEventListener('click', () => greet("Goodbye"));
+
+            // greets the user by getting the first and last names from the text boxes.
+            const greet = (greeting) => {
+                let firstName;
+                let lastName;
+
+                firstName = checkNameInput(firstnameInput, "Peter");
+                lastName = checkNameInput(lastnameInput, "Parker");
+
+                if(shoutifyCheckbox.checked)
+                {
+                    outputPTag.innerHTML = `${greeting} ${firstName} ${lastName}`.toUpperCase();
+                }
+                else
+                {
+                    outputPTag.innerHTML = `${greeting} ${firstName} ${lastName}`;
+                }
+                
+            }
+        };
+
+        //checks to see if a name that has been inputted has any text in it. Otherwise returns placeholder name
+        const checkNameInput = (nameInput, failsafe) => {
+            debugger;
+            if (!nameInput.value.trim()) {
+                return failsafe; //failsafe
+            }
+            else {
+                return nameInput.value.trim(); //its a name
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <input id="first-name-input">
+    <input id="last-name-input">
+    <br>
+    <br>
+    <!--button for "submitting"-->
+    <button id="btn-hello">Say hi</button>
+    <button id="btn-goodbye">Say goodbye</button>
+    <input type="checkbox" id="shoutify" name="Shoutify!"/>
+    <label for="shoutify">Shoutify!</label>
+    <br>
+    <!-- p tag for showing the output -->
+    <p id="output">Not the output</p>
+</body>
+
+</html>

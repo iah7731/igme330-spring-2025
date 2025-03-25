@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Sine Start</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+    <script>
+        "use strict";
+        const canvasWidth = 400, canvasHeight = 300;
+        let ctx;
+        let n = 0;
+        let divergence = 137.5;
+        const c = 4;
+        const fps = 60;
+        let radius = 2;
+        let restartButton;
+        let divergenceSelect;
+
+        window.onload = init;
+
+        function init() {
+            ctx = canvas.getContext("2d");
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            restartButton =  document.querySelector("#btn-restart");
+            restartButton.addEventListener("click", () =>
+            {
+                ctx.fillStyle = "black"
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                n = 0;
+            })
+
+            divergenceSelect = document.querySelector("#ctrl-divergence");
+            divergenceSelect.addEventListener("change", () => 
+            {
+                divergence = parseFloat(divergenceSelect.value);
+            });
+
+            loop();
+        }
+
+        function loop() 
+        {
+            setTimeout(loop, 1000 / fps);
+
+            ctx.save(); 
+			ctx.fillStyle = "black";
+			ctx.globalAlpha = 0.2/fps;
+			ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+			ctx.restore();
+
+            let a = n * dtr(divergence);
+            let r = c * Math.sqrt(n);
+            //console.log(a,r);
+            let x = r * Math.cos(a) + canvasWidth/2;
+            let y = r * Math.sin(a) + canvasHeight/2;
+            //console.log(x,y);
+            let aDegrees = (n * divergence) % 361;
+            let color = `hsl(${n/5 % 361},100%,50%)`;
+            drawCircle(ctx,x,y,radius,color);
+            radius += 0.001;
+            n++;
+        }
+
+        // helpers
+        function dtr(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function drawCircle(ctx, x, y, radius, color) {
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+    </script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="controls">
+        <label>Divergence Angle</label>
+        <select id="ctrl-divergence">
+            <option value="137.1">137.1</option>
+            <option value="137.3">137.3</option>
+            <option value="137.5" selected>137.5</option>
+            <option value="137.7">137.7</option>
+            <option value="137.7">137.9</option>
+        </select>
+        <button id="btn-restart">Restart App</button>
+    </div>
+    <p>
+        The main change I made was adding a slow fadeout effect like the sine wave exercise as well as slowly increasing the radius through each loop. 
+        My control changes the divergence angle through a dropdown. I also updated the frame rate to 60FPS.
+    </p>
+</body>
+
+</html>
