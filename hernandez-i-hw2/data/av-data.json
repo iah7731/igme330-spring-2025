@@ -1,0 +1,40 @@
+{
+    "title": "Ultimate Audio Visualizer",
+    "sounds": 
+    {
+        "filenames": [
+            "media/New Adventure Theme.mp3",
+            "media/Peanuts Theme.mp3",
+            "media/The Picard Song.mp3"
+        ],
+        "track": [
+            "New Adventure Theme",
+            "Peanuts Theme",
+            "The Picard Song"
+        ]
+    },
+    "spriteValues":
+    {
+        "x":
+        [
+            20,
+            90
+        ],
+        "y":
+        [
+            90,
+            20
+        ],
+        "radius":
+        [
+            4,
+            2
+        ],
+        "moveSpeed":
+        [
+            2,
+            5
+        ]
+
+    }
+}
