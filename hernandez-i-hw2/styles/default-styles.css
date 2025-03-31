@@ -1,46 +1,61 @@
 body {
-    background: #eeeeee;
-    font-family: tahoma, verdana, sans serif;
-  }
+  background: #210f2c;
+  font-family: tahoma, verdana, sans serif;
+  text-align: center;
+  color:rgb(255, 218, 254);
+}
 
-  *{font-family:sans-serif;}
-  span{margin-right:2em;}
-  #slider-distortion{position:relative;top:.7em;}
+* {
+  font-family: sans-serif;
+}
 
-  canvas {
-    margin-left: 1rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
-    background: #fafafa;
-  }
-  
-  #controls{
-    margin-left: 1rem;
-  }
-  
-  #volumeLabel{
-    margin-left: 1rem;
-  }
-  
-  section{
-    margin-bottom: 1rem;
-  }
-  
-  #playButton{
-    font-size: 1.2rem;
-    width: 6rem;
-  }
-  
-  button[data-playing="yes"]:after{
-    content: "Pause";
-  }
-  
-  button[data-playing="no"]:after{
-    content: "Play";
-  }
-  
-  #fsButton{
-    font-size: 1.2rem;
-    width: 8rem;
-  }
+hr{
+  color:#f048ffa0
+}
+
+span {
+  margin-right: 2em;
+}
+
+#slider-distortion {
+  position: relative;
+  top: .7em;
+}
+
+canvas {
+  margin-left: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  background: #fafafa;
+}
+
+#controls {
+  margin-left: 1rem;
+}
+
+#volumeLabel {
+  margin-left: 1rem;
+}
+
+section {
+  margin-bottom: 1rem;
+}
+
+#playButton {
+  font-size: 1.2rem;
+  width: 6rem;
+}
+
+button[data-playing="yes"]:after {
+  content: "Pause";
+}
+
+button[data-playing="no"]:after {
+  content: "Play";
+}
+
+#fsButton {
+  font-size: 1.2rem;
+  width: 8rem;
+}

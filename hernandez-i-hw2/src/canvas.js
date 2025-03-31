@@ -1,6 +1,7 @@
 import * as utils from './utils.js';
 
 let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, frequencyDataRadioButton, timeDomainRadioButton;
+let noiseAmount = 0.05;
 
 
 const setupCanvas = (canvasElement, analyserNodeRef) => { // sets up the canvas
@@ -9,7 +10,7 @@ const setupCanvas = (canvasElement, analyserNodeRef) => { // sets up the canvas
     canvasWidth = canvasElement.width;
     canvasHeight = canvasElement.height;
     // create a gradient that runs top to bottom
-    gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, [{ percent: 0, color: "blue" }, { percent: 1, color: "magenta" }, { percent: .75, color: "red" }]);
+    gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, [{ percent: 0, color: "#d70071" }, { percent: 1, color: "#0035a9" }, { percent: .5, color: "#9c4e97" }]);
     // keep a reference to the analyser node
     analyserNode = analyserNodeRef;
     // this is the array where the analyser data will be stored
@@ -18,15 +19,23 @@ const setupCanvas = (canvasElement, analyserNodeRef) => { // sets up the canvas
     timeDomainRadioButton = document.querySelector("#radio-time-domain");
 }
 
+const drawCircle = (ctx, color, x, y, radius) => {
+    ctx.save();
+    ctx.beginPath();
+    ctx.fillStyle = color;
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+    ctx.fill();
+    ctx.closePath();
+    ctx.restore();
+}
+
 const draw = (params = {}) => { // draws to the canvas each frame
     // 1 - populate the audioData array with the frequency data from the analyserNode
     // notice these arrays are passed "by reference"
-    if(frequencyDataRadioButton.checked)
-    {
+    if (frequencyDataRadioButton.checked) {
         analyserNode.getByteFrequencyData(audioData);
     }
-    if(timeDomainRadioButton.checked)
-    {
+    if (timeDomainRadioButton.checked) {
         analyserNode.getByteTimeDomainData(audioData);
     }
 
@@ -44,15 +53,17 @@ const draw = (params = {}) => { // draws to the canvas each frame
         ctx.globalAlpha = 0.3;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         ctx.restore();
-
     }
 
     // 4 - draw bars
-    if (params.showBars) {
-        let barSpacing = 4;
-        let margin = 5;
-        let screenWidthForBars = canvasWidth - (audioData.length * barSpacing) - margin * 2;
-        let barWidth = screenWidthForBars / audioData.length;
+
+    let barSpacing = 4;
+    let margin = 5;
+    let screenWidthForBars = canvasWidth - (audioData.length * barSpacing) - margin * 2;
+    let barWidth = screenWidthForBars / audioData.length;
+
+    if (params.showBars && frequencyDataRadioButton.checked) {
+
         let barHeight = 200;
         let topSpacing = 100;
 
@@ -67,40 +78,65 @@ const draw = (params = {}) => { // draws to the canvas each frame
 
         ctx.restore();
     }
+    else if (params.showBars && timeDomainRadioButton.checked) {
+        let barHeight = 10;
+        let topSpacing = 100;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,255,255,0.50)';
+        ctx.fillStyle = 'rgba(0,0,0,0.50)';
+        // loop through the data and draw!
+        for (let i = 0; i < audioData.length; i++) {
+            ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i], barWidth, barHeight);
+            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i], barWidth, barHeight);
+        }
+
+        ctx.restore();
+    }
 
     // 5 - draw circles
-    if (params.showCircles) {
+    if (params.showCircles && frequencyDataRadioButton.checked) {
         let maxRadius = canvasHeight / 4;
         ctx.save();
         ctx.globalAlpha = 0.5;
         for (let i = 0; i < audioData.length; i++) {
             // red-ish circles
             let percent = audioData[i] / 255;
-
             let circleRadius = percent * maxRadius;
-            ctx.beginPath();
-            ctx.fillStyle = utils.makeColor(255, 111, 111, .34 - percent / 3.0);
-            ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
+            drawCircle(ctx, utils.makeColor(99, 177, 104, .34 - percent / 3.0), canvasWidth / 2, canvasHeight / 2, circleRadius);
 
             // blue-ish circles, bigger, more transparent
-            ctx.beginPath();
-            ctx.fillStyle = utils.makeColor(0, 0, 255, .10 - percent / 10.0);
-            ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius * 1.5, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
+            drawCircle(ctx, utils.makeColor(40, 255, 142, .10 - percent / 10.0), canvasWidth / 2, canvasHeight / 2, circleRadius * 1.5);
 
             // yellow-ish circles, smaller
-            ctx.save();
-            ctx.beginPath();
-            ctx.fillStyle = utils.makeColor(200, 200, 0, .5 - percent / 5.0);
-            ctx.arc(canvasWidth / 2, canvasHeight / 2, circleRadius * .50, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
-            ctx.restore();
+            drawCircle(ctx, utils.makeColor(255, 202, 86, .5 - percent / 5.0), canvasWidth / 2, canvasHeight / 2, circleRadius * .50);
         }
         ctx.restore();
+    }
+
+    else if (params.showCircles && timeDomainRadioButton.checked) {
+
+        let maxRadius = canvasHeight / 8;
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+
+        for (let i = 0; i < audioData.length; i++) {
+            if (audioData[i] / 255 >= 0.502) {
+                // orange circles
+                let percent = audioData[i] / 255;
+                let circleRadius = percent * maxRadius;
+                drawCircle(ctx, utils.makeColor(245, 150, 42, .34 - percent / 3.0), canvasWidth / 2, (canvasHeight / 2) + 125, circleRadius);
+
+                // red circles, bigger, more transparent
+                drawCircle(ctx, utils.makeColor(245, 65, 22, .10 - percent / 10.0), canvasWidth / 2, (canvasHeight / 2) + 125, circleRadius * 1.5);
+
+                // yellow circles, smaller
+                drawCircle(ctx, utils.makeColor(245, 211, 78, .5 - percent / 5.0), canvasWidth / 2, (canvasHeight / 2) + 125, circleRadius * .50, 0);
+            }
+
+        }
+        ctx.restore();
+
     }
 
     // 6 - bitmap manipulation
@@ -119,8 +155,8 @@ const draw = (params = {}) => { // draws to the canvas each frame
     let width = imageData.width; // not using here
 
     for (let i = 0; i < length; i += 4) {
-        // C) randomly change every 20th pixel to black
-        if (params.showNoise && Math.random() < .05) { //TODO: make this a slider thing
+        // C) randomly change every nth pixel to black depending on user input
+        if (params.showNoise && Math.random() < noiseAmount) {
             // data[i] is the red channel
             // data[i+1] is the green channel
             // data[i+2] is the blue channel
@@ -155,28 +191,54 @@ const draw = (params = {}) => { // draws to the canvas each frame
     ctx.putImageData(imageData, 0, 0);
 }
 
-class CircleSprite{
-    constructor(x,y,radius,moveSpeed){
-      this.x = x;
-      this.y = y;
-      this.radius = radius;
-      this.color = utils.getRandomColor();
-      this.moveSpeed = moveSpeed;
+class CircleSprite {
+    constructor(x, y, radius, xMoveSpeed, yMoveSpeed) { //assign values to the circle
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = utils.makeColor(0, 0, 0, 255);
+        this.xMoveSpeed = xMoveSpeed;
+        this.yMoveSpeed = yMoveSpeed
     }
-    
-    update(){
-       this.x = this.x + this.moveSpeed;
-       this.y = this.y + this.moveSpeed;
-    }
-    
-    draw(ctx){
-      ctx.save();
-      ctx.fillStyle = this.color;
-      ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-      ctx.fill();
-      ctx.restore();
-    }
-  }
 
+    update() { // update the ball's position and bounce it off the corners of the canvas if audio is playing
+        this.colorUpdate();
+        if(document.querySelector("#play-btn").dataset.playing == "yes")
+        {
+            if (this.x + this.xMoveSpeed > canvasWidth - this.radius || this.x + this.xMoveSpeed < this.radius) {
+                this.xMoveSpeed = -this.xMoveSpeed;
+            }
+            if (this.y + this.yMoveSpeed > canvasHeight - this.radius || this.y + this.yMoveSpeed < this.radius) {
+                this.yMoveSpeed = -this.yMoveSpeed;
+            }
+    
+            this.x += this.xMoveSpeed;
+            this.y += this.yMoveSpeed;
+        }
+    }
 
-export { setupCanvas, draw, CircleSprite, ctx };
+    draw(ctx) { //draw the circle if audio is playing
+        if(document.querySelector("#play-btn").dataset.playing == "yes")
+        {
+            drawCircle(ctx, this.color, this.x, this.y, this.radius);
+        }
+    }
+
+    colorUpdate() { //change the color based on the average of audioData
+        let newColor = 0;
+        for (let i = 0; i < audioData.length; i++) {
+            newColor += audioData[i];
+        }
+
+        newColor = newColor / audioData.length;
+
+        this.color = utils.makeColor(newColor, newColor, newColor, 255);
+    }
+}
+
+const editNoiseAmount = (num) =>
+{
+    noiseAmount = num;
+}
+
+export { setupCanvas, draw, CircleSprite, ctx, editNoiseAmount};

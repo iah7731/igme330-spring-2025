@@ -11,6 +11,7 @@ import * as utils from './utils.js';
 import * as audio from './audio.js';
 import * as canvas from './canvas.js';
 
+
 const drawParams = {
     showGradient: true,
     showBars: true,
@@ -22,29 +23,39 @@ const drawParams = {
     lowshelf: false
 };
 
-let circleSprite1, circleSprite2;
+let circleSprite1, circleSprite2, circleSprite3, circleSprite4;
 let audioFilenames, audioMetadata;
-debugger;
-fetch('../data/av-data.json')
-    .then(response => response.json())
-    .then(jsonData => {
-        jsonDataFill(jsonData)
-    })
-.catch(error => console.error("Error loading JSON:", error));
+let trackSelect;
+let DEFAULTS;
 
 const jsonDataFill = (jsonData) =>
 {
     document.querySelector("#title-av").innerHTML = jsonData.title;
-    circleSprite1 = new canvas.CircleSprite(jsonData.spriteValues.x[0], jsonData.spriteValues.y[0], jsonData.spriteValues.radius[0], jsonData.spriteValues.moveSpeed[0]);
-    circleSprite2 = new canvas.CircleSprite(jsonData.spriteValues.x[1], jsonData.spriteValues.y[1], jsonData.spriteValues.radius[1], jsonData.spriteValues.moveSpeed[1]);
+    document.querySelector("#heading-av").innerHTML = jsonData.title;
+    debugger;
+    circleSprite1 = new canvas.CircleSprite(jsonData.spriteValues.x[0], jsonData.spriteValues.y[0], jsonData.spriteValues.radius[0], jsonData.spriteValues.xMoveSpeed[0],jsonData.spriteValues.yMoveSpeed[0]);
+    circleSprite2 = new canvas.CircleSprite(jsonData.spriteValues.x[1], jsonData.spriteValues.y[1], jsonData.spriteValues.radius[1], jsonData.spriteValues.xMoveSpeed[1],jsonData.spriteValues.yMoveSpeed[1]);
+    circleSprite3 = new canvas.CircleSprite(jsonData.spriteValues.x[2], jsonData.spriteValues.y[2], jsonData.spriteValues.radius[2], jsonData.spriteValues.xMoveSpeed[2],jsonData.spriteValues.yMoveSpeed[2]);
+    circleSprite4 = new canvas.CircleSprite(jsonData.spriteValues.x[3], jsonData.spriteValues.y[3], jsonData.spriteValues.radius[3], jsonData.spriteValues.xMoveSpeed[3],jsonData.spriteValues.yMoveSpeed[3]);
     audioFilenames = new Array(jsonData.sounds.filenames[0],jsonData.sounds.filenames[1],jsonData.sounds.filenames[2]);
     audioMetadata = new Array(jsonData.sounds.track[0],jsonData.sounds.track[1],jsonData.sounds.track[2]);
-}
 
-// 1 - here we are faking an enumeration
-const DEFAULTS = Object.freeze({
-    sound1: audioFilenames[0],
-});
+    trackSelect = document.querySelector("#track-select");
+
+    for (let i = 0; i < 3; i += 1)
+    {
+        let newOption = document.createElement('option');
+        newOption.text = jsonData.sounds.track[i];
+        newOption.value = jsonData.sounds.filenames[i];
+
+        trackSelect.add(newOption,null);
+    }
+
+    // 1 - here we are faking an enumeration
+    DEFAULTS = Object.freeze({
+        sound1: audioFilenames[0],
+    });
+}
 
 const init = () => { // sets up the infinite loop
     console.log("init called");
@@ -134,7 +145,7 @@ const setupUI = (canvasElement) => { // sets up the UI
 
     }
 
-    // C - hookup volume slider & label
+    // C - hookup volume and noise slider & label
     let volumeSlider = document.querySelector("#slider-volume");
     let volumeLabel = document.querySelector("#label-volume");
 
@@ -148,6 +159,18 @@ const setupUI = (canvasElement) => { // sets up the UI
 
     // set value of label to match initial value of slider
     volumeSlider.dispatchEvent(new Event("input"));
+
+    //repeat this same process with the noise slider
+
+    let noiseSlider = document.querySelector("#slider-noise");
+    let noiseLabel = document.querySelector("#label-noise");
+
+    noiseSlider.oninput = e => {
+        canvas.editNoiseAmount(e.target.value);
+        noiseLabel.innerHTML = Math.round((e.target.value / 2 * 100));
+    }
+
+    noiseSlider.dispatchEvent(new Event("input"));
 
     // D - hookup track <select>
     let trackSelect = document.querySelector("#track-select");
@@ -227,9 +250,13 @@ const loop = () => {
     setTimeout(loop, 17);
     circleSprite1.update();
     circleSprite2.update();
+    circleSprite3.update();
+    circleSprite4.update();
     canvas.draw(drawParams);
     circleSprite1.draw(canvas.ctx);
     circleSprite2.draw(canvas.ctx);
+    circleSprite3.draw(canvas.ctx);
+    circleSprite4.draw(canvas.ctx);
 }
 
-export { init };
+export { init, jsonDataFill };

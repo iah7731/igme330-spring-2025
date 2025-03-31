@@ -1,8 +1,17 @@
 import * as main from "./main.js";
-window.onload = ()=>{
-	console.log("window.onload called");
-	// 1 - do preload here - load fonts, images, additional sounds, etc...
-	
-	// 2 - start up app
-	main.init();
-}
+window.onload = () => {
+    console.log("window.onload called");
+    fetch('../data/av-data.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(jsonData => {
+            main.jsonDataFill(jsonData);
+            main.init(); 
+        })
+        .catch(error => console.error("Error loading JSON:", error));
+};
+
