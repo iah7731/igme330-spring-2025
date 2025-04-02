@@ -13,9 +13,71 @@ const initMap = () => {
         center: [-77.67454147338866, 43.08484339838443],
         zoom: 15.5
     });
+
+    map.on('style.load', () => {
+        // Insert the layer beneath any symbol layer.
+        const layers = map.getStyle().layers;
+        const labelLayerId = layers.find(
+            (layer) => layer.type === 'symbol' && layer.layout['text-field']
+        ).id;
+
+        // The 'building' layer in the Mapbox Streets
+        // vector tileset contains building height data
+        // from OpenStreetMap.
+        map.addLayer(
+            {
+                'id': 'add-3d-buildings',
+                'source': 'composite',
+                'source-layer': 'building',
+                'filter': ['==', 'extrude', 'true'],
+                'type': 'fill-extrusion',
+                'minzoom': 15,
+                'paint': {
+                    'fill-extrusion-color': '#aaa',
+
+                    // Use an 'interpolate' expression to
+                    // add a smooth transition effect to
+                    // the buildings as the user zooms in.
+                    'fill-extrusion-height': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        15,
+                        0,
+                        15.05,
+                        ['get', 'height']
+                    ],
+                    'fill-extrusion-base': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        15,
+                        0,
+                        15.05,
+                        ['get', 'min_height']
+                    ],
+                    'fill-extrusion-opacity': 0.6
+                }
+            },
+            labelLayerId
+        );
+    });
+}
+
+const addMarker = (coordinates, title, description, className) => {
+    let el = document.createElement('div');
+    el.className = className;
+    
+    new mapboxgl.Marker(el)
+    .setLngLat(coordinates)
+    .setPopup(new mapboxgl.Popup({ offset: 25}) // add popups
+    .setHTML('<h3>'+ title +'</h3><p>' + description + '</p>'))
+    .addTo(map);
+    
 }
 
 const loadMarkers = () => {
+    debugger;
     const coffeeShops = [
         {
             latitude: 43.084156,
@@ -121,19 +183,11 @@ const addMarkersToMap = () => {
         el.className = 'marker';
 
         // make a marker for each feature and add it to the map
-        new mapboxgl.Marker(el)
-            .setLngLat(feature.geometry.coordinates)
-            .setPopup(
-                new mapboxgl.Popup({ offset: 25 }) // add popups
-                    .setHTML(
-                        `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-                    )
-            )
-            .addTo(map);
+        addMarker(feature.geometry.coordinates,feature.properties.title,feature.properties.description,"marker");
     }
 }
 
-const flyTo = (cebter = [0,0]) =>
+const flyTo = (center = [0,0]) =>
 {
     map.flyTo({center:center});
 }
@@ -145,8 +199,8 @@ const setZoomLevel = (value=0) =>
 
 const setPitchAndBearing = (pitch=0,bearing=0) =>
 {
-    map.SetPitch(pitch);
+    map.setPitch(pitch);
     map.setBearing(bearing);
 }
 
-export {initMap,loadMarkers,addMarkersToMap,setZoomLevel,setPitchAndBearing,flyTo};
+export {initMap,loadMarkers,addMarkersToMap,setZoomLevel,setPitchAndBearing,flyTo,addMarker};
