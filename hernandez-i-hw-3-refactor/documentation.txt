@@ -1,0 +1,21 @@
+    II. Tell us about the 2 Audio Effect nodes you added to the audio routing graph.
+
+	I added in a treble and bass filter to the audio routing graph. They allow the user to add more effects to the audio - they add comical amounts of treble and bass respectively.
+
+    III. Tell us your Sprite's class name, what it looks like/what it does in the visualization
+
+I made a CircleSprite class. This class uses the arc function to draw circles when audio is playing that bounce around the screen. The color of the circle changes depending on the average of all the audio data on a black-to-white gradient.
+
+    IV. Tell us what app data you put in your av-data.json file
+
+I put the initialized values for the CircleSprite class in the json file.
+
+    V. Tell us how you improved the aesthetics of the app over the AV HW:
+        be sure to give yourself a grade for this section, between 0% and 15%
+        0% would be if there was not a meaningful improvement over the AV HW
+        15% would be substantial improvement over the AV HW - a "wow" (portfolio-worthy) experience
+        and everything in between
+
+I changed the background color of the webpage and added a h1 that displays the name of the app. I also made the gradients on the background and pulsating circles more pleasant colors. I also changed the way bars work when in Time Domain mode - they are much shorter and appear in the middle of the screen. When show circles is checked in Time Domain mode, the circle is also placed on the bottom of the screen compared to the center in Frequency Data mode - I wanted to highlight the bars more in this mode. Lastly, I added a slider that controls how much noise is shown when noise is allowed. I centered the text to give everything a more unified look and lastly added a paragraph on the bottom of the page that describes my thought processes on certain functions of the webpage.
+
+I give myself a 10% on this section. I made a good amount of changes to the look of the app, but there is more I could've done such as add more distinct visual features or new fonts to spice up the webpage.

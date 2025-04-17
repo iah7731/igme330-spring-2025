@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title id="title-av">Audio Visualizer</title>
+  <link href="./styles/default-styles.css" type="text/css" rel="stylesheet">
+  <!-- <script src="./src/loader.ts" type="module"></script> -->
+</head>
+<body>
+<main>
+  <h1 id="heading-av">???</h1>
+  <br>
+  <canvas width="800" height="400"></canvas>
+  <div id="controls">
+    <section>
+      <h2>Track Settings</h2>
+      <button id="play-btn" data-playing="no"></button>
+      <button id="fs-btn">Full Screen</button>
+      <br>
+      <br>
+      <label>Track: 
+        <select id="track-select">
+        </select>
+      </label>
+      <br>
+      <br>
+      <h2>Visualization Format</h2><br>
+      <input type="radio" id="radio-frequency-data" name="radio-display-data-type" value="radio-frequency-data" checked>
+      <label for="radio-frequency-data">Frequency Data</label>
+      <input type="radio" id="radio-time-domain" name="radio-display-data-type" value="radio-time-domain">
+      <label for="radio-time-domain">Time Domain</label>
+    </section>
+		
+    <section>
+      <h2>Volume Settings</h2>
+      Volume: <input type="range" id="slider-volume" min="0" max="2" value="1" step="0.01">
+      <span id="label-volume">???</span>
+      Noise: <input type="range" id="slider-noise" min="0" max="1" value="0.05" step="0.01">
+      <span id="label-noise">???</span>
+    </section>
+  </div>
+  <section>
+    <h2>Extra Options</h2>
+    <span><input type="checkbox" id="cb-gradient" checked><label for="cb-gradient">Show Gradient</label></span>
+    <span><input type="checkbox" id="cb-bars" checked><label for="cb-bars">Show Bars</label></span>
+    <span><input type="checkbox" id="cb-circles" checked><label for="cb-circles">Show Circles</label></span>
+    <span><input type="checkbox" id="cb-noise"><label for="cb-noise">Show Noise</label></span>
+    <span><input type="checkbox" id="cb-invert"><label for="cb-invert">Invert Colors</label></span>
+    <span><input type="checkbox" id="cb-emboss"><label for="cb-emboss">Show Emboss</label></span>
+    <br>
+    <br>
+    <span><label for="cb-highshelf">Highshelf Filter (Treble)</label><input type="checkbox" id="cb-highshelf"></span>
+    <span><label for="cb-lowshelf">Lowshelf Filter (Bass)</label><input type="checkbox" id="cb-lowshelf"></span>
+  </section>
+  <hr>
+  <h2>Recommended Settings</h2>
+  <p>
+    I recommend using the bars with Time Domain mode and the circles with Frequency Data mode - they compliment each other nicely.<br>
+    If you turn off the gradient, you can see the bouncing ball's color changes easier.<br>
+    The Peanuts Theme is the best track here - you should test with that.
+  </p>
+</main>
+<script src="./dist/bundle.js"></script>
+</body>
+</html>
